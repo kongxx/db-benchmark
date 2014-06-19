@@ -24,8 +24,8 @@ public class InsertAction implements Action {
 
 	private static final String TABLE_NAME = "BENCHMARK2";
 	
-	private int totalSize;
-	private int batchSize;
+	private final int totalSize;
+	private final int batchSize;
 	
 	public InsertAction(int totalSize, int batchSize) {
 		this.totalSize = totalSize;
@@ -74,7 +74,7 @@ public class InsertAction implements Action {
 	}
 
 	private String generateInsertSQL(Map<String, Integer> columns) throws SQLException {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		StringBuffer sbColumns = new StringBuffer();
 		StringBuffer sbValues = new StringBuffer();
 		
@@ -102,6 +102,7 @@ public class InsertAction implements Action {
 			QueryRunner queryRunner = new QueryRunner();
 			String sql = "SELECT * FROM " + TABLE_NAME + " WHERE 1=0";
 			columns = queryRunner.query(conn, sql, new ResultSetHandler<Map<String, Integer>>() {
+				@Override
 				public Map<String, Integer> handle(ResultSet rs) throws SQLException {
 					Map<String, Integer> columns = new LinkedHashMap<String, Integer>();
 					ResultSetMetaData rsmd = rs.getMetaData();
@@ -127,20 +128,18 @@ public class InsertAction implements Action {
 			case Types.DOUBLE:
 			case Types.FLOAT:
 			case Types.REAL:
-				obj = RandomUtils.nextFloat();
-				break;
 			case Types.BIGINT:
 			case Types.TINYINT:
 			case Types.SMALLINT:
 			case Types.INTEGER:
-				obj = RandomUtils.nextInt();
+				obj = RandomUtils.nextInt(10000);
 				break;
 			case Types.DATE:
 			case Types.TIMESTAMP:
 				obj = Calendar.getInstance().getTime();
 				break;
 			default:
-				obj = "zzzzzzzzzzZZZZZZZZZZ_" + System.currentTimeMillis();
+				obj = "zzzzzzzzzzZZZZZZZZZZ_" + RandomUtils.nextInt(100);
 				break;
 		}
 		return obj;
