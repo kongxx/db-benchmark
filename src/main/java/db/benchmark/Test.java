@@ -1,11 +1,12 @@
 package db.benchmark;
 
 import db.benchmark.action.InsertAction;
+import java.io.File;
 
 public class Test {
-	public static void main1(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
 		System.out.println(DBUtils.getInstance().getConnection());
-
+		File file = new File(Test.class.getResource("/conf/db.properties").getFile());
 		
 //		long start = System.currentTimeMillis();
 //		List<String> ids = new ArrayList<String>(10000000);
@@ -22,7 +23,7 @@ public class Test {
 //		System.out.println("Size: " + ids.size());
 	}
 	
-	public static void main(String[] args) throws Exception {
+	public static void main2(String[] args) throws Exception {
 		ExecuteResults results = new ExecuteResults();
 		PerformanceTest test = new PerformanceTest();
 
