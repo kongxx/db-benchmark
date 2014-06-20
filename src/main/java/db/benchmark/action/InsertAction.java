@@ -19,9 +19,13 @@ import org.apache.commons.lang.math.RandomUtils;
 import db.benchmark.Action;
 import db.benchmark.DBUtils;
 import db.benchmark.ExecuteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class InsertAction implements Action {
 
+	private static Logger logger = Logger.getLogger(InsertAction.class.getName());
+			
 	private static final String TABLE_NAME = "BENCHMARK";
 	
 	private final int totalSize;
@@ -34,11 +38,16 @@ public class InsertAction implements Action {
 	
 	@Override
 	public void execute() throws ExecuteException {
-		Map<String, Integer> columns = queryTableColumns();
-
 		Connection conn = null;
 		try {
 			conn = DBUtils.getInstance().getConnection(false);
+		} catch(SQLException ex) {
+			logger.log(Level.SEVERE, null, ex);
+			throw new ExecuteException(ex.getMessage(), ex);
+		}
+		
+		try {
+			Map<String, Integer> columns = queryTableColumns();
 			String sql = generateInsertSQL(columns);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			
@@ -66,8 +75,13 @@ public class InsertAction implements Action {
 				
 				ps.clearBatch();
 			}
-		} catch (SQLException e) {
-			throw new ExecuteException(e.getMessage(), e);
+		} catch (SQLException ex) {
+			logger.log(Level.SEVERE, null, ex);
+			if (null != ex.getNextException()) {
+				logger.log(Level.SEVERE, null, ex.getNextException());
+			}
+			DbUtils.rollbackAndCloseQuietly(conn);
+			throw new ExecuteException(ex.getMessage(), ex);
 		} finally {
 			DbUtils.closeQuietly(conn);
 		}
@@ -94,7 +108,7 @@ public class InsertAction implements Action {
 		return sb.toString();
 	}
 	
-	private Map<String, Integer> queryTableColumns(){
+	private Map<String, Integer> queryTableColumns() throws SQLException {
 		Map<String, Integer> columns = null;
 		Connection conn = null;
 		try {
@@ -112,8 +126,6 @@ public class InsertAction implements Action {
 					return columns;
 				}
 			});
-		} catch (SQLException e) {
-			e.printStackTrace();
 		} finally {
 			DbUtils.closeQuietly(conn);
 		}
