@@ -22,7 +22,7 @@ import db.benchmark.ExecuteException;
 
 public class InsertAction implements Action {
 
-	private static final String TABLE_NAME = "BENCHMARK2";
+	private static final String TABLE_NAME = "BENCHMARK";
 	
 	private final int totalSize;
 	private final int batchSize;
