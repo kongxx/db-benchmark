@@ -28,11 +28,9 @@ public class InsertAction implements Action {
 			
 	private static final String TABLE_NAME = "BENCHMARK";
 	
-	private final int totalSize;
 	private final int batchSize;
 	
-	public InsertAction(int totalSize, int batchSize) {
-		this.totalSize = totalSize;
+	public InsertAction(int batchSize) {
 		this.batchSize = batchSize;
 	}
 	
@@ -51,30 +49,22 @@ public class InsertAction implements Action {
 			String sql = generateInsertSQL(columns);
 			PreparedStatement ps = conn.prepareStatement(sql);
 			
-			int loop = (totalSize / batchSize) + ((totalSize % batchSize == 0) ? 0 : 1);
-			int insertedCount = 0;
-			for (int i = 0; i < loop; i++) {
-				for (int j = 0; j < batchSize; j++) {
-					int idxColumn = 1;
-					for (String column : columns.keySet()) {
-						if (column.equalsIgnoreCase("ID")) {
-							ps.setObject(idxColumn, UUID.randomUUID().toString());
-						} else {
-							ps.setObject(idxColumn, generateColumnValue(columns.get(column)));
-						}
-						idxColumn ++;
+			for (int idx = 0; idx < batchSize; idx++) {
+				int idxColumn = 1;
+				for (String column : columns.keySet()) {
+					if (column.equalsIgnoreCase("ID")) {
+						ps.setObject(idxColumn, UUID.randomUUID().toString());
+					} else {
+						ps.setObject(idxColumn, generateColumnValue(columns.get(column)));
 					}
-					ps.addBatch();
-					insertedCount ++;
-					if (insertedCount >= totalSize) {
-						break;
-					}
+					idxColumn ++;
 				}
-				ps.executeBatch();
-				conn.commit();
-				
-				ps.clearBatch();
+				ps.addBatch();
 			}
+			ps.executeBatch();
+			conn.commit();
+
+			ps.clearBatch();
 		} catch (SQLException ex) {
 			logger.log(Level.SEVERE, null, ex);
 			if (null != ex.getNextException()) {
