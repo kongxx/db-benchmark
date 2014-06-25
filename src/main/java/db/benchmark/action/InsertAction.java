@@ -19,6 +19,7 @@ import org.apache.commons.lang.math.RandomUtils;
 import db.benchmark.Action;
 import db.benchmark.DBUtils;
 import db.benchmark.ExecuteException;
+import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -137,8 +138,10 @@ public class InsertAction implements Action {
 				obj = RandomUtils.nextInt(10000);
 				break;
 			case Types.DATE:
-			case Types.TIMESTAMP:
 				obj = Calendar.getInstance().getTime();
+				break;
+			case Types.TIMESTAMP:
+				obj = new Timestamp(Calendar.getInstance().getTimeInMillis());
 				break;
 			default:
 				obj = "zzzzzzzzzzZZZZZZZZZZ_" + RandomUtils.nextInt(100);
