@@ -33,17 +33,26 @@ public class InsertAction implements Action {
 
 	private final int batchSize;
 
-	public InsertAction(int batchSize) {
-		this(DEFAULT_TABLE_NAME, batchSize);
+	private final int nBatchSize;
+
+	public InsertAction(int batchSize, int nBatchSize) {
+		this(DEFAULT_TABLE_NAME, batchSize, nBatchSize);
 	}
 
-	public InsertAction(String table, int batchSize) {
+	public InsertAction(String table, int batchSize, int nBatchSize) {
 		this.table = table;
 		this.batchSize = batchSize;
+		this.nBatchSize = nBatchSize;
 	}
 
 	@Override
 	public void execute() throws ExecuteException {
+		for (int i = 0; i < nBatchSize; i++) {
+			run();
+		}
+	}
+
+	private void run() throws ExecuteException {
 		Connection conn = null;
 		try {
 			conn = DBUtils.getInstance().getConnection(false);
@@ -51,7 +60,7 @@ public class InsertAction implements Action {
 			logger.log(Level.SEVERE, null, ex);
 			throw new ExecuteException(ex.getMessage(), ex);
 		}
-		
+
 		try {
 			Map<String, Integer> columns = queryTableColumns();
 			String sql = generateInsertSQL(columns);

@@ -32,12 +32,13 @@ public class InsertCommand implements Command {
 			ExecuteResults results = new ExecuteResults();
 			PerformanceTest test = new PerformanceTest();
 			Action action = null;
+			int nBatchSize = 10;
 			if (table != null) {
-				action = new InsertAction(table, batchSize);
+				action = new InsertAction(table, batchSize, nBatchSize);
 			} else {
-				action = new InsertAction(batchSize);
+				action = new InsertAction(batchSize, nBatchSize);
 			}
-			String subject = "Insert test[batch size: " + batchSize + "]";
+			String subject = "Insert test[batch: " + batchSize + ", total: "+ (batchSize * nBatchSize) +"]";
 			results.addTestResult(test.execute(subject, action, concurrentCount, sampleCount));
 			ExecuteResultsFormatter formatter = new ExecuteResultsFormatter(results);
 			System.out.println(formatter.toString());
