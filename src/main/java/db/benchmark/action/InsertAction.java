@@ -26,15 +26,22 @@ import java.util.logging.Logger;
 public class InsertAction implements Action {
 
 	private static Logger logger = Logger.getLogger(InsertAction.class.getName());
-			
-	private static final String TABLE_NAME = "BENCHMARK";
-	
+
+	private static String DEFAULT_TABLE_NAME = "BENCHMARK";
+
+	private final String table;
+
 	private final int batchSize;
-	
+
 	public InsertAction(int batchSize) {
+		this(DEFAULT_TABLE_NAME, batchSize);
+	}
+
+	public InsertAction(String table, int batchSize) {
+		this.table = table;
 		this.batchSize = batchSize;
 	}
-	
+
 	@Override
 	public void execute() throws ExecuteException {
 		Connection conn = null;
@@ -83,7 +90,7 @@ public class InsertAction implements Action {
 		StringBuffer sbColumns = new StringBuffer();
 		StringBuffer sbValues = new StringBuffer();
 		
-		sb.append("INSERT INTO ").append(TABLE_NAME);
+		sb.append("INSERT INTO ").append(table);
 		
 		for (String column : columns.keySet()) {
 			if (sbColumns.length() > 0) {
@@ -105,7 +112,7 @@ public class InsertAction implements Action {
 		try {
 			conn = DBUtils.getInstance().getConnection();
 			QueryRunner queryRunner = new QueryRunner();
-			String sql = "SELECT * FROM " + TABLE_NAME + " WHERE 1=0";
+			String sql = "SELECT * FROM " + table + " WHERE 1=0";
 			columns = queryRunner.query(conn, sql, new ResultSetHandler<Map<String, Integer>>() {
 				@Override
 				public Map<String, Integer> handle(ResultSet rs) throws SQLException {
