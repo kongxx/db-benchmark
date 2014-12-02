@@ -16,7 +16,6 @@
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
-					<optimise>true</optimise>
 					<debug>true</debug>
 				</configuration>
 			</plugin>
@@ -89,12 +88,8 @@
 
 		<dependency>
 			<groupId>com.ibm</groupId>
-			<artifactId>db2</artifactId>
+			<artifactId>db2jcc4</artifactId>
 			<version>unknown</version>
-			<!--
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/db2jcc4.jar</systemPath>
-			-->
 		</dependency>
 		
 		<dependency>
